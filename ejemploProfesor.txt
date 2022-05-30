@@ -1,0 +1,36 @@
+// Solving SPOJ's TAP2014A - At random
+#include   "iostream"
+using   namespace   std ;
+
+const   auto   INF  =  1e18LL ;
+
+void   printAns ( bool   ans ) {
+   cout  << ( ans   ?   'B'  :  'M' ) <<  endl ;
+}
+
+int   main () {
+   int   t ;
+   cin  >>  t ;
+
+   while  ( t --) {
+     int   n ;
+     cin  >>  n ;
+
+     bool   ans  =  true ;  // will stay the same if condition meets
+     int   last  = - 1 ,  cur ;
+     char   prev  =  0 ,  now ;
+
+     for  ( int   i  =  0 ;  i  <  n ; ++ i ) {
+       cin  >>  cur  >>  now ;
+
+       // if any of the two numbers are the same, it changes value of ans
+       if  ( cur  ==  last  ||  now  ==  prev ) {
+         ans  =  false ;
+      }
+       last  =  cur ;
+       prev  =  now ;
+    }
+     printAns ( ans );
+  }
+   return   0 ;
+}

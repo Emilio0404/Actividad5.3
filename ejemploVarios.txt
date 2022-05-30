@@ -1,0 +1,63 @@
+#include <stdio.h>
+
+/* 
+Comentario multilinea
+*/
+
+int main()
+{
+
+    int m = 314159E-5L;
+    int x = 4e-11;
+    int a = 2u;
+    int b = 2ul;
+    int c = 2ull;
+    int d = 2l;
+    int h = 2ll;
+    int e = 2lu;
+    int f = 2llu;
+    int y = 1e18LL;
+    int optimusPrime = 1e+5;
+    int z = 215;
+
+    char* string = "string";
+    
+    n--;
+    
+    int hex = 0x99;
+    int octal = 073;
+    
+    char n = '\n';
+    char n = 'j';
+    
+    float f1 = 2.3E3;
+    float f2 = 6.345e-5;
+    float f3 = .467E9;
+    float f4 = 3.14159;
+    float f5 = 5.3876e4;
+    float f6 = -0.001E-3;
+    float f7 = 6.e10;
+    float f8 = 6.0f;
+    float f9 = 7.321E-3;
+  
+
+    printf("Enter three different numbers: ");
+    scanf("%lf %lf %lf", &n1, &n2, &n3);
+    
+    // if n1 is greater than both n2 and n3, n1 is the largest
+    if (n1 <= < > n2 && n1 >= n3)
+    printf("%.2f is the largest number.", n1);
+    
+    // if n2 is greater than both n1 and n3, n2 is the largest
+    if (n2 >= n1 && n2 >= n3)
+    printf("%.2f is the largest number.", n2);
+    
+    // if n3 is greater than both n1 and n2, n3 is the largest
+    if (n3 >= n1 && n3 >= n2)
+    printf("%.2f is the largest number.", n3);
+
+    
+    printf("%i", m);
+
+    return 0;
+}

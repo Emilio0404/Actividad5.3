@@ -1,0 +1,50 @@
+//*** LITERALES ***//
+// String
+"Hola Mundo"
+// Caracter
+'x'
+// Enteros
+215
+2u
+2ul
+2ull
+2l
+2lu
+2ll
+2llu
+5.3876e4
+1e18LL
+314159E-5L
+// Reales
+2.15
+2.5E13
+6.345e-5
+-0.001E-3
+.467E9
+// Hexadecimales
+0x99
+// Octales
+077
+
+//*** OPERADORES ***//
++ - * / += -=
+
+//*** SEPARADORES ***//
+; ( ) { } [ ]
+
+//*** PALABRAS RESERVADAS ***//
+auto
+const
+if
+else
+while
+
+//*** VARIABLES ***//
+holaMundo
+hola_mundo
+holamundo1
+
+//*** COMENTARIOS ***//
+// Esto es un comentario
+/* Esto es un
+comentario multilinea */

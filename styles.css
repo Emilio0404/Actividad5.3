@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    background-color: #000000;
+    font-size: 20px;
+    line-height: 10px;
+}
+
+.palabra-reservada {
+    color: #68b5d2;
+}
+
+.variable {
+    color: #e78c45;
+}
+
+.comentario {
+    color: #818481;
+}
+
+.operador {
+    color: #8d6199;
+}
+
+.string {
+    color: #8d9c2e;
+}
+
+.separador {
+    color: #70c0b1;
+}
+
+.literal-numerico {
+    color: #336fb7;
+}
+
+.error {
+    color: rgb(255, 0, 0);
+}
