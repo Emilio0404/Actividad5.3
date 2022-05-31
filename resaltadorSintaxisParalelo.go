@@ -5,9 +5,32 @@ import (
 	"os"
 )
 
+var PALABRAS_RESERVADAS = []string{
+	"auto", "else", "long", "switch", "break", "enum", "register",
+	"typedef", "case", "extern", "return", "union", "char", "float",
+	"short", "unsigned", "const", "for", "signed", "void", "continue",
+	"goto", "sizeof", "volatile", "default", "if", "static", "while",
+	"do", "int", "struct", "double", "main"}
+
+var SEPARADORES = []string{
+	"{", "}", "(", ")", "[", "]", ",", ";"}
+
+var OPERADORES = []string{
+	"+", "*", "%", "=", ">", "<", "!", "&", "?", ":", "~", "^",
+	"|", "&lt", "&gt", "&amp", "."}
+
+var CHAR_REQUIERE_FORMATO = map[string]string{
+	"&":  "&amp",
+	"<":  "&lt",
+	">":  "&gt",
+	"\"": "&quot",
+	"'":  "&#39"}
+
 func main() {
 	revisarArchivosRecibidos(os.Args[1:])
-
+	for key, element := range CHAR_REQUIERE_FORMATO {
+		fmt.Println(key, element)
+	}
 }
 
 // Asegurarse de que el archivo fue dado en la linea de comandos y su formato es correcto
