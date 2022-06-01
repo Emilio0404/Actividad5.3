@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -27,27 +28,11 @@ var CHAR_REQUIERE_FORMATO = map[string]string{
 	"'":  "&#39"}
 
 func main() {
-	revisarArchivosRecibidos(os.Args[1:])
-	for key, element := range CHAR_REQUIERE_FORMATO {
-		fmt.Println(key, element)
-	}
-}
-
-// Asegurarse de que el archivo fue dado en la linea de comandos y su formato es correcto
-func revisarArchivosRecibidos(archivos []string) {
-	noArgumentos := len(archivos)
-
+	nombresArchivos := os.Args[1:]
+	noArgumentos := len(nombresArchivos)
 	if noArgumentos < 1 {
 		fmt.Println("ERROR: DEBE PROVEER AL MENOS UN ARCHIVO DE TEXTO")
 		os.Exit(1)
-	}
-
-	for i := 0; i < noArgumentos; i++ {
-		extensionArchivo := archivos[i][len(archivos[i])-4:]
-		if extensionArchivo != ".txt" {
-			fmt.Println("ERROR: LOS ARCHIVOS DEBEN SER .TXT")
-			os.Exit(1)
-		}
 	}
 
 	directorioActual, err := os.Getwd()
@@ -56,12 +41,59 @@ func revisarArchivosRecibidos(archivos []string) {
 		os.Exit(2)
 	}
 
-	// Asegurarse de que los archivos existan
 	for i := 0; i < noArgumentos; i++ {
-		_, err := os.Stat(directorioActual + "\\" + archivos[i])
-		if os.IsNotExist(err) {
-			fmt.Println("ERROR: DEBE PROVEER ARCHIVOS EXISTENTES")
+		if !revisarFormatoArchivo(nombresArchivos[i]) {
+			fmt.Println("ERROR: LOS ARCHIVOS DEBEN SER .TXT")
 			os.Exit(3)
 		}
+
+		if !revisarArchivoExiste(nombresArchivos[i], directorioActual) {
+			fmt.Println("ERROR: DEBE PROVEER ARCHIVOS EXISTENTES")
+			os.Exit(4)
+		}
+	}
+
+	for i := 0; i < noArgumentos; i++ {
+		resaltadorSintaxis(nombresArchivos[i])
+	}
+}
+
+func revisarFormatoArchivo(archivo string) bool {
+	extensionArchivo := archivo[len(archivo)-4:]
+	return extensionArchivo == ".txt"
+}
+
+func revisarArchivoExiste(archivo string, directorioActual string) bool {
+	_, err := os.Stat(directorioActual + "\\" + archivo)
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return true
+}
+
+func resaltadorSintaxis(archivo string) {
+
+	file, err := os.Open(archivo)
+	if err != nil {
+		fmt.Println("Error opening file!!!")
+	}
+	defer file.Close()
+
+	const maxSz = 1
+
+	// create buffer
+	b := make([]byte, maxSz)
+
+	for {
+		// read content to buffer
+		readTotal, err := file.Read(b)
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println(err)
+			}
+			break
+		}
+		fmt.Println(string(b[:readTotal])) // print content from buffer
 	}
 }
