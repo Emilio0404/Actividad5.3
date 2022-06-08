@@ -148,8 +148,9 @@ func generarClase(token string) string {
 			if v == token {
 				clase = "palabra-reservada"
 			}
-			clase = "variable"
 		}
+		clase = "variable"
+
 	} else if token == "#define" || token == "#include" {
 		clase = "palabra-reservada"
 	} else if isUnsignedOrLongInt(token) {
@@ -194,3 +195,20 @@ func isVariable(token string) bool{
 	return true
 }
 
+func isOperand(token string) bool {
+	for _, v := range OPERADORES {
+		if v == token {
+			return true
+		}
+	}
+	return false
+}
+
+func isSeparator(token string) bool {
+	for _, v := range SEPARADORES {
+		if v == token {
+			return true
+		}
+	}
+	return false
+}
