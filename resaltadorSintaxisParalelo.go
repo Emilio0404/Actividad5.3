@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
+	"unicode"
+	"strconv"
 )
 
 var PALABRAS_RESERVADAS = []string{
@@ -122,4 +125,90 @@ func check_error(e error) {
 	if e != nil {
 		fmt.Println(e)
 	}
+}
+
+func generarTokenEnFormatoHTML(unfinishedTokenList []string) string {
+	token := strings.Join(unfinishedTokenList, "")
+	claseCSS := generarClase(token)
+	return "<span class=" + claseCSS + ">" + "token" + "</span>"
+}
+
+func generarClase(token string) string {
+
+	var clase string = ""
+
+	if isInteger(token) {
+		clase = "literal-numerico"
+	} else if isHexadecimal(token) {
+		clase = "literal-numerico"
+	} else if isVariable(token) {
+		// aqui puedo usar un método de find, pero funciona con slices. creo que si se debe de poder.
+
+		for _, v := range PALABRAS_RESERVADAS {
+			if v == token {
+				clase = "palabra-reservada"
+			}
+		}
+		clase = "variable"
+
+	} else if token == "#define" || token == "#include" {
+		clase = "palabra-reservada"
+	} else if isUnsignedOrLongInt(token) {
+		clase = "literal-numerico"
+	} else if token == "-" {
+		clase = "operador"
+	} else if token == "/" {
+		clase = "operador"
+	} else if isFloat(token) {
+		clase = "literal-numerico"
+	} else if isFloatThatEndsWithF(token) {
+		clase = "literal-numerico"
+	} else if isOperand(token) {
+		clase = "operador"
+	} else if isComment(token) {
+		clase = "comentario"
+	} else if isMultilineComment(token) {
+		clase = "comentario"
+	} else if isSeparator(token) {
+		clase = "seprador"
+	} else if isString(token) || isCharLiteral(token) {
+		clase = "string"
+	}
+
+	return clase
+
+}
+
+func manejarErrorSintaxis() string {
+	return "</p>\n<p><span class=\"error\">ERROR DE SINTAXIS</span></p>\n"
+}
+
+func isVariable(token string) bool{
+	if(token[0] == '_') {token = token[1:]}
+    
+	for i, char := range token{
+		if (i == 0 && unicode.IsNumber(char)) {return false}
+        if ( !(unicode.IsNumber(char) || unicode.IsLetter(char)) ){
+			return false
+		}
+    }
+	return true
+}
+
+func isOperand(token string) bool {
+	for _, v := range OPERADORES {
+		if v == token {
+			return true
+		}
+	}
+	return false
+}
+
+func isSeparator(token string) bool {
+	for _, v := range SEPARADORES {
+		if v == token {
+			return true
+		}
+	}
+	return false
 }
