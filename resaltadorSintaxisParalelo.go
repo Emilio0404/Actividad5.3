@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode"
+	"strconv"
 )
 
 var PALABRAS_RESERVADAS = []string{
@@ -179,3 +181,16 @@ func generarClase(token string) string {
 func manejarErrorSintaxis() string {
 	return "</p>\n<p><span class=\"error\">ERROR DE SINTAXIS</span></p>\n"
 }
+
+func isVariable(token string) bool{
+	if(token[0] == '_') {token = token[1:]}
+    
+	for i, char := range token{
+		if (i == 0 && unicode.IsNumber(char)) {return false}
+        if ( !(unicode.IsNumber(char) || unicode.IsLetter(char)) ){
+			return false
+		}
+    }
+	return true
+}
+
