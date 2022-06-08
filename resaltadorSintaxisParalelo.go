@@ -175,3 +175,7 @@ func generarClase(token string) string {
 	return clase
 
 }
+
+func manejarErrorSintaxis() string {
+	return "</p>\n<p><span class=\"error\">ERROR DE SINTAXIS</span></p>\n"
+}
