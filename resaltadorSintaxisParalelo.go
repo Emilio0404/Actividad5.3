@@ -477,13 +477,81 @@ func resaltar(archivo string) string {
 
 		} else if estado == "puede_ser_real" {
 
+			///////////////////////////////////////////////////////
+
 		} else if estado == "real" {
+			estado = "inicial"
+			if isNumeric(char) {
+				estado = "real"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				//unfinishedToken = nil
+			} else if char == "e" || char == "E" {
+				estado = "real_aux1"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				//unfinishedToken = nil
+			} else if char == "f" || char == "F" {
+				estado = "fin_real_con_f"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				//unfinishedToken = nil
+			} else if char == "-" {
+				estado = "resta"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "/" {
+				estado = "division"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isSeparator(char) {
+				estado = "separador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == " " {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "\n" {
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+				codigoResaltado += NUEVO_PARRAFO_HTML
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
+
+			//////////////////////////////////////////////////////////////
 
 		} else if estado == "real_aux1" {
+			if char == "e" || char == "E" {
+				estado = "real_aux1"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+			}
 
+			///////////////////////////////////////////////////////////
 		} else if estado == "real_aux2" {
 
 		} else if estado == "real_aux3" {
+
+			//////////////////////////////////////////////////////////////
 
 		} else if estado == "fin_real_con_f" {
 			if isOperand(char) {
