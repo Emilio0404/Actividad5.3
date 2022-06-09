@@ -148,8 +148,10 @@ func resaltar(archivo string) string {
 
 		// Si no se leyo ningun caracter, resaltar token y agregarlo al codigo
 		if err == io.EOF {
-			tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-			codigoResaltado += tokenEnHTML + "</p>"
+			if len(unfinishedToken) > 0 {
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML + "</p>"
+			}
 			break
 		}
 
@@ -159,7 +161,9 @@ func resaltar(archivo string) string {
 			char = CHAR_REQUIERE_FORMATO[char]
 		}
 
-		fmt.Println(char, estado)
+		if char == "\r" {
+			continue
+		}
 
 		if estado == "inicial" {
 			if isAlpha(char) {
@@ -197,14 +201,12 @@ func resaltar(archivo string) string {
 				codigoResaltado += ESPACIO_HTML
 			} else if char == "\n" {
 				estado = "inicial"
-				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado = codigoResaltado + tokenEnHTML + ESPACIO_HTML + NUEVO_PARRAFO_HTML
-				unfinishedToken = nil
+				codigoResaltado += ESPACIO_HTML + NUEVO_PARRAFO_HTML
 			} else if char == "#" {
 				estado = "include_define"
 				unfinishedToken = append(unfinishedToken, char)
 			} else {
-				fmt.Println(char, "awui")
+				fmt.Print(estado, unfinishedToken, char)
 				codigoResaltado += manejarErrorSintaxis()
 				break
 			}
@@ -213,7 +215,7 @@ func resaltar(archivo string) string {
 			if char == " " {
 				estado = "inicial"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado = codigoResaltado + tokenEnHTML + ESPACIO_HTML
+				codigoResaltado += tokenEnHTML + ESPACIO_HTML
 				unfinishedToken = nil
 			} else if char == "\n" {
 				estado = "inicial"
@@ -392,7 +394,7 @@ func resaltar(archivo string) string {
 
 		} else if estado == "unsigned_int" {
 			if char == "l" || char == "L" {
-				estado = "unsigned_int_long"
+				estado = "unsigned_long_int"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "-" {
 				estado = "resta"
@@ -959,9 +961,8 @@ func resaltar(archivo string) string {
 			} else if char == " " {
 				estado = "inicial"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += tokenEnHTML
+				codigoResaltado += tokenEnHTML + ESPACIO_HTML
 				unfinishedToken = nil
-				unfinishedToken = append(unfinishedToken, ESPACIO_HTML)
 			} else if char == "\n" {
 				estado = "inicial"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
@@ -1014,16 +1015,10 @@ func resaltar(archivo string) string {
 					unfinishedToken = append(unfinishedToken, char)
 				} else if char == " " {
 					estado = "inicial"
-					tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-					codigoResaltado += tokenEnHTML
-					unfinishedToken = nil
 					codigoResaltado += ESPACIO_HTML
 				} else if char == "\n" {
 					estado = "inicial"
-					tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-					codigoResaltado += tokenEnHTML
 					codigoResaltado += NUEVO_PARRAFO_HTML
-					unfinishedToken = nil
 				} else {
 					codigoResaltado += manejarErrorSintaxis()
 					break
@@ -1067,16 +1062,10 @@ func resaltar(archivo string) string {
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == " " {
 				estado = "inicial"
-				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += tokenEnHTML
-				unfinishedToken = nil
 				codigoResaltado += ESPACIO_HTML
 			} else if char == "\n" {
 				estado = "inicial"
-				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += tokenEnHTML
 				codigoResaltado += NUEVO_PARRAFO_HTML
-				unfinishedToken = nil
 			} else {
 				codigoResaltado += manejarErrorSintaxis()
 				break
@@ -1241,6 +1230,8 @@ func generarClase(token string) string {
 
 	clase := ""
 
+	fmt.Println(token)
+
 	if isNumeric(token) {
 		clase = "literal-numerico"
 	} else if isHexadecimal(token) {
@@ -1326,6 +1317,10 @@ func isVariable(token string) bool {
 }
 
 func isHexadecimal(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+
 	if token[0:2] == "0x" || token[0:2] == "0X" {
 		_, err := strconv.ParseUint(token, 16, 64)
 		return err != nil
@@ -1335,17 +1330,19 @@ func isHexadecimal(token string) bool {
 
 func isFloat(token string) bool {
 	_, err := strconv.ParseFloat(token, 64)
-	return err != nil
+	return err == nil
 }
 
 func isFloatThatEndsWithF(token string) bool {
 	if len(token) < 2 {
 		return false
 	}
+
 	if token[len(token)-1] == 'F' || token[len(token)-1] == 'f' {
 		_, err := strconv.ParseFloat(token[:len(token)-2], 64)
 		return err == nil
 	}
+
 	return false
 }
 
@@ -1368,7 +1365,9 @@ func isUnsignedOrLongInt(token string) bool {
 	// enteros con exponente E realmente son floats. Primero hay que convertir a
 	// float y luego ver si es int o no
 	if isFloat(aux) {
-		return isNumeric(aux)
+		flt, err := strconv.ParseFloat(token, 64)
+		check_error(err)
+		return flt == float64(int(flt))
 	}
 	return false
 }
@@ -1378,6 +1377,7 @@ func manejarErrorSintaxis() string {
 }
 
 func isComment(token string) bool {
+
 	if len(token) < 2 {
 		return false
 	}
