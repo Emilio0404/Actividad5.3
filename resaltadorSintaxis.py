@@ -676,6 +676,7 @@ def resaltar(htmlFile):
                 codigoResaltado.append(char)
                 break
 
+##############################################################
 
         elif estado == "real":
             if isInteger(char):
@@ -795,6 +796,8 @@ def resaltar(htmlFile):
             else:
                 codigoResaltado.append(manejarErrorSintaxis())
                 break
+
+###############################################################
 
 
         elif estado == "fin_real_con_f":
