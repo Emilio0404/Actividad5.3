@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"unicode"
@@ -85,7 +86,7 @@ func revisarFormatoArchivo(archivo string) bool {
 }
 
 func archivoExiste(archivo string, directorioActual string) bool {
-	_, err := os.Stat(directorioActual + "\\" + archivo)
+	_, err := os.Stat(filepath.Join(directorioActual, archivo))
 	if os.IsNotExist(err) {
 		return false
 	}
