@@ -540,6 +540,34 @@ func manejarErrorSintaxis() string {
 	return "</p>\n<p><span class=\"error\">ERROR DE SINTAXIS</span></p>\n"
 }
 
+func isComment(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:2] == "//"
+}
+
+func isMultilineComment(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:2] == "/*" || token[len(token)-2:] == "/*"
+}
+
+func isString(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:5] == "&quot" && token[len(token)-5:] == "&quot"
+}
+
+func isCharLiteral(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:4] == "&#39" && token[len(token)-4:] == "&#39"
+}
+
 func stringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
