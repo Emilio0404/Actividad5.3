@@ -725,8 +725,66 @@ func resaltar(archivo string) string {
 			}
 
 		} else if estado == "real" {
+			if isNumeric(char) {
+				estado = "real"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "e" || char == "E" {
+				estado = "real_aux1"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "f" || char == "F" {
+				estado = "fin_real_con_f"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "-" {
+				estado = "resta"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "/" {
+				estado = "division"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isSeparator(char) {
+				estado = "separador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == " " {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+			} else if char == "\n" {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + NUEVO_PARRAFO_HTML)
+				unfinishedToken = nil
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "real_aux1" {
+			if isNumeric(char) {
+				estado = "real_aux2"
+				unfinishedToken = append(unfinishedToken, char)
+			}else if char == '-' || char == '+'{
+				estado = "real_aux3"
+				unfinishedToken = append(unfinishedToken, char)
+			}else{
+				codigoResaltado += manejarErrorSintaxis()
+				break				
+			}
+		}
 
 		} else if estado == "real_aux2" {
 			// Es valido para salir de numero real despues de recibir E o E-
