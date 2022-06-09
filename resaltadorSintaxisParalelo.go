@@ -1151,7 +1151,7 @@ func resaltar(archivo string) string {
 				estado = "resta"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "&#39" {
-				estado = "caracter"
+				estado = "literal_caracter"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "&quot" {
 				estado = "string"
