@@ -852,8 +852,6 @@ func resaltar(archivo string) string {
 				break
 			}
 
-
-
 		} else if estado == "division" {
 			if char == "/" {
 				estado = "comentario"
@@ -963,7 +961,6 @@ func resaltar(archivo string) string {
 				break
 			}
 
-<<<<<<< HEAD
 		} else if estado == "comentario" {
 			if char == "\n" {
 				estado = "inicial"
@@ -992,9 +989,6 @@ func resaltar(archivo string) string {
 			} else {
 				unfinishedToken = append(unfinishedToken, char)
 			}
-=======
-		} else if estado == "comentario_multilinea" {
->>>>>>> a5d943cd857c4d13df85f4c9ac50739fd9ca75b1
 
 		} else if estado == "cerrar_comentario_multilinea" {
 			if char == "/" {
