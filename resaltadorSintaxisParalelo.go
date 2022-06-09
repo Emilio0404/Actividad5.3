@@ -1,15 +1,13 @@
 /* Actividad 3.4
 Materia:Implementación de métodos computacionales.
 Grupo: 604
-Fecha: 13 de mayo de 2022
+Fecha: 08 de Junio de 2022
 Integrantes:
     José Emilio Alvear Cantú  		| A01024944
     Jorge Del Barco Garza     		| A01284234
     Patricio mendoza Pasapera 		| A00830337
-	Andrea Catalina Fernández Mena  |
+	Andrea Catalina Fernández Mena  | A01197705
 */
-
-package main
 
 import (
 	"fmt"
