@@ -376,8 +376,90 @@ func resaltar(archivo string) string {
 			}
 
 		} else if estado == "unsigned_int" {
+			if char == "l" || char == "L" {
+				estado = "unsigned_int_long"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "-" {
+				estado = "resta"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "/" {
+				estado = "division"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isSeparator(char) {
+				estado = "separador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == " " {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+			} else if char == "\n" {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + NUEVO_PARRAFO_HTML)
+				unfinishedToken = nil
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "unsigned_long_int" {
+			if char == "l" || char == "L" {
+				estado = "unsigned_long_long_int"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "-" {
+				estado = "resta"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "/" {
+				estado = "division"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isSeparator(char) {
+				estado = "separador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == " " {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+			} else if char == "\n" {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + NUEVO_PARRAFO_HTML)
+				unfinishedToken = nil
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "unsigned_long_long_int" || estado == "long_unsigned_int" {
 
@@ -404,6 +486,13 @@ func resaltar(archivo string) string {
 		} else if estado == "real_aux3" {
 
 		} else if estado == "fin_real_con_f" {
+			if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			}
 
 		} else if estado == "resta" {
 
@@ -583,6 +672,34 @@ func isUnsignedOrLongInt(token string) bool {
 
 func manejarErrorSintaxis() string {
 	return "</p>\n<p><span class=\"error\">ERROR DE SINTAXIS</span></p>\n"
+}
+
+func isComment(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:2] == "//"
+}
+
+func isMultilineComment(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:2] == "/*" || token[len(token)-2:] == "/*"
+}
+
+func isString(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:5] == "&quot" && token[len(token)-5:] == "&quot"
+}
+
+func isCharLiteral(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	return token[0:4] == "&#39" && token[len(token)-4:] == "&#39"
 }
 
 func stringInSlice(a string, list []string) bool {
