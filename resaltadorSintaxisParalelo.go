@@ -729,8 +729,58 @@ func resaltar(archivo string) string {
 		} else if estado == "real_aux1" {
 
 		} else if estado == "real_aux2" {
+			// Es valido para salir de numero real despues de recibir E o E-
+			if isNumeric(char) {
+				unfinishedToken = append(unfinishedToken, char)
+				estado = "real_aux2"
+			} else if char == "-" {
+				estado = "resta"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "/" {
+				estado = "division"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isSeparator(char) {
+				estado = "separador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == " " {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+			} else if char == "\n" {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + NUEVO_PARRAFO_HTML)
+				unfinishedToken = nil
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "real_aux3" {
+			// Se asegura que despues de recibir un E- o E+, se reciba un numero
+			if isNumeric(char) {
+				unfinishedToken = append(unfinishedToken, char)
+				estado = "real_aux2"
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "fin_real_con_f" {
 			if isOperand(char) {
