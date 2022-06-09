@@ -9,6 +9,8 @@ Integrantes:
 	Andrea Catalina Fernández Mena  | A01197705
 */
 
+package main
+
 import (
 	"fmt"
 	"io"
