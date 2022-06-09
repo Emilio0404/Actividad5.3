@@ -593,6 +593,18 @@ func isAlpha(s string) bool {
 	return true
 }
 
+func isAlnum(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if !isAlpha(string(s[i])) {
+			if !isNumeric(string(s[i])) {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 func isNumeric(s string) bool {
 	_, err := strconv.Atoi(s)
 	if err != nil {
@@ -610,19 +622,13 @@ func isSeparator(token string) bool {
 }
 
 func isVariable(token string) bool {
-	if token[0] == '_' {
-		token = token[1:]
+	if (isAlpha(token) || isAlnum(token)) && !isNumeric(string(token[0])) {
+		return true
+	} else if stringInSlice("_", strings.Split(token, "")) && string(token[0]) != "_" && !isNumeric(string(token[0])) {
+		return true
 	}
 
-	for i, char := range token {
-		if i == 0 && unicode.IsNumber(char) {
-			return false
-		}
-		if !(unicode.IsNumber(char) || unicode.IsLetter(char)) {
-			return false
-		}
-	}
-	return true
+	return false
 }
 
 func manejarErrorSintaxis() string {
@@ -637,7 +643,7 @@ func isComment(token string) bool {
 }
 
 func isMultilineComment(token string) bool {
-	if len(token) < 2 {
+	if len(token) < 4 {
 		return false
 	}
 	return token[0:2] == "/*" || token[len(token)-2:] == "/*"
