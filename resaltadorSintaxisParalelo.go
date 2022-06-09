@@ -759,6 +759,13 @@ func resaltar(archivo string) string {
 		} else if estado == "literal_caracter" {
 
 		} else if estado == "literal_caracter_escapado" {
+			if strings.Contains("abfnrtv\\?", char) || char == "&#39" || char == "&quot" {
+				estado = "final_literal_caracter"
+				unfinishedToken = append(unfinishedToken, char)
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "final_literal_caracter" {
 			if char == "&#39" {
