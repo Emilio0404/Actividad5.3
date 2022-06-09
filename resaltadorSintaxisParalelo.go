@@ -486,6 +486,13 @@ func resaltar(archivo string) string {
 		} else if estado == "real_aux3" {
 
 		} else if estado == "fin_real_con_f" {
+			if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			}
 
 		} else if estado == "resta" {
 
