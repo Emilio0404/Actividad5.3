@@ -1,8 +1,19 @@
+
+/* Actividad 3.4
+Materia:Implementación de métodos computacionales.
+Grupo: 604
+Fecha: 13 de mayo de 2022
+Integrantes:
+    José Emilio Alvear Cantú  		| A01024944
+    Jorge Del Barco Garza     		| A01284234
+    Patricio mendoza Pasapera 		| A00830337
+	Andrea Catalina Fernández Mena  |
+*/
+
 package main
 
 import (
 	"fmt"
-	"go/token"
 	"io"
 	"os"
 	"strconv"
@@ -148,6 +159,8 @@ func resaltar(archivo string) string {
 			char = CHAR_REQUIERE_FORMATO[char]
 		}
 
+		fmt.Println(char, estado)
+
 		if estado == "inicial" {
 			if isAlpha(char) {
 				estado = "variable"
@@ -191,6 +204,7 @@ func resaltar(archivo string) string {
 				estado = "include_define"
 				unfinishedToken = append(unfinishedToken, char)
 			} else {
+				fmt.Println(char, "awui")
 				codigoResaltado += manejarErrorSintaxis()
 				break
 			}
@@ -240,7 +254,7 @@ func resaltar(archivo string) string {
 				} else if char == " " {
 					estado = "inicial"
 					codigoResaltado += ESPACIO_HTML
-				} else if char == "/n" {
+				} else if char == "\n" {
 					estado = "inicial"
 					codigoResaltado += NUEVO_PARRAFO_HTML
 				} else {
@@ -724,47 +738,38 @@ func resaltar(archivo string) string {
 				break
 			}
 
-			///////////////////////////////////////////////////////
-
 		} else if estado == "real" {
-			estado = "inicial"
 			if isNumeric(char) {
 				estado = "real"
-				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
-				//unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "e" || char == "E" {
 				estado = "real_aux1"
-				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
-				//unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "f" || char == "F" {
 				estado = "fin_real_con_f"
-				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
-				//unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "-" {
 				estado = "resta"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				codigoResaltado += tokenEnHTML
 				unfinishedToken = nil
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "/" {
 				estado = "division"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				codigoResaltado += tokenEnHTML
 				unfinishedToken = nil
 				unfinishedToken = append(unfinishedToken, char)
 			} else if isOperand(char) {
 				estado = "operador"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				codigoResaltado += tokenEnHTML
 				unfinishedToken = nil
 				unfinishedToken = append(unfinishedToken, char)
 			} else if isSeparator(char) {
 				estado = "separador"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				codigoResaltado += tokenEnHTML
 				unfinishedToken = nil
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == " " {
@@ -772,38 +777,29 @@ func resaltar(archivo string) string {
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
 				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
 				unfinishedToken = nil
-				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "\n" {
+				estado = "inicial"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				codigoResaltado += (tokenEnHTML + NUEVO_PARRAFO_HTML)
 				unfinishedToken = nil
-				codigoResaltado += NUEVO_PARRAFO_HTML
 			} else {
 				codigoResaltado += manejarErrorSintaxis()
 				break
 			}
 
-			//////////////////////////////////////////////////////////////
-
 		} else if estado == "real_aux1" {
-			if char == "e" || char == "E" {
-				estado = "real_aux1"
-				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
-				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
-				unfinishedToken = nil
+			if isNumeric(char) {
+				estado = "real_aux2"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "-" || char == "+" {
+				estado = "real_aux3"
+				unfinishedToken = append(unfinishedToken, char)
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
 			}
 
-			///////////////////////////////////////////////////////////
 		} else if estado == "real_aux2" {
-<<<<<<< HEAD
-
-		} else if estado == "real_aux3" {
-
-			//////////////////////////////////////////////////////////////
-
-		} else if estado == "fin_real_con_f" {
-			if isOperand(char) {
-=======
 			// Es valido para salir de numero real despues de recibir E o E-
 			if isNumeric(char) {
 				unfinishedToken = append(unfinishedToken, char)
@@ -821,7 +817,6 @@ func resaltar(archivo string) string {
 				unfinishedToken = nil
 				unfinishedToken = append(unfinishedToken, char)
 			} else if isOperand(char) {
->>>>>>> 52300aca9bc3718d73978252573ff359b64bc18e
 				estado = "operador"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
 				codigoResaltado += tokenEnHTML
@@ -901,13 +896,13 @@ func resaltar(archivo string) string {
 			}
 
 		} else if estado == "resta" {
-			isAlpha(char) {
+			if isAlpha(char) {
 				estado = "variable"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
 				codigoResaltado += tokenEnHTML
 				unfinishedToken = nil
 				unfinishedToken = append(unfinishedToken, char)
-			} else if charr == "0" {
+			} else if char == "0" {
 				estado = "octal"
 				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
 				codigoResaltado += tokenEnHTML
@@ -982,7 +977,7 @@ func resaltar(archivo string) string {
 			if char == "/" {
 				estado = "comentario"
 				unfinishedToken = append(unfinishedToken, char)
-			} else if char == "*"{
+			} else if char == "*" {
 				estado = "comentario_multilinea"
 				unfinishedToken = append(unfinishedToken, char)
 			} else {
@@ -993,13 +988,13 @@ func resaltar(archivo string) string {
 				if isAlpha(char) {
 					estado = "variable"
 					unfinishedToken = append(unfinishedToken, char)
-				} else if char == "0"{
+				} else if char == "0" {
 					estado = "octal"
 					unfinishedToken = append(unfinishedToken, char)
 				} else if isNumeric(char) {
 					estado = "entero"
 					unfinishedToken = append(unfinishedToken, char)
-				} else if char == "."{
+				} else if char == "." {
 					estado = "real"
 					unfinishedToken = append(unfinishedToken, char)
 				} else if char == "-" {
@@ -1019,7 +1014,7 @@ func resaltar(archivo string) string {
 					unfinishedToken = append(unfinishedToken, char)
 				} else if char == " " {
 					estado = "inicial"
-					tokenEnHTML  = generarTokenEnFormatoHTML(unfinishedToken)
+					tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
 					codigoResaltado += tokenEnHTML
 					unfinishedToken = nil
 					codigoResaltado += ESPACIO_HTML
@@ -1043,13 +1038,13 @@ func resaltar(archivo string) string {
 			if isAlpha(char) {
 				estado = "variable"
 				unfinishedToken = append(unfinishedToken, char)
-			} else if char == "0"{
+			} else if char == "0" {
 				estado = "octal"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if isNumeric(char) {
 				estado = "entero"
 				unfinishedToken = append(unfinishedToken, char)
-			} else if char == "."{
+			} else if char == "." {
 				estado = "real"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "-" {
@@ -1095,7 +1090,7 @@ func resaltar(archivo string) string {
 				codigoResaltado += NUEVO_PARRAFO_HTML
 				unfinishedToken = nil
 			} else {
-				if char == " "{
+				if char == " " {
 					unfinishedToken = append(unfinishedToken, ESPACIO_HTML)
 				} else {
 					unfinishedToken = append(unfinishedToken, char)
@@ -1107,7 +1102,7 @@ func resaltar(archivo string) string {
 				estado = "cerrar_comentario_multilinea"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "\n" {
-				token = strings.Join(unfinishedToken, " ")
+				token := strings.Join(unfinishedToken, " ")
 				codigoResaltado += "<span class=\"comentario\">" + token + "</span>"
 				unfinishedToken = nil
 			} else if char == " " {
@@ -1120,11 +1115,11 @@ func resaltar(archivo string) string {
 			if char == "/" {
 				estado = "inicial"
 				unfinishedToken = append(unfinishedToken, char)
-				token = strings.Join(unfinishedToken, " ")
+				token := strings.Join(unfinishedToken, " ")
 				codigoResaltado += "<span class=\"comentario\">" + token + "</span>"
 				unfinishedToken = nil
 			} else if char == "\n" {
-				token = strings.Join(unfinishedToken, " ")
+				token := strings.Join(unfinishedToken, " ")
 				codigoResaltado += "<span class=\"comentario\">" + token + "</span>"
 				codigoResaltado += ESPACIO_HTML + NUEVO_PARRAFO_HTML
 				unfinishedToken = nil
@@ -1143,13 +1138,13 @@ func resaltar(archivo string) string {
 			if isAlpha(char) {
 				estado = "variable"
 				unfinishedToken = append(unfinishedToken, char)
-			} else if char == "0"{
+			} else if char == "0" {
 				estado = "octal"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if isNumeric(char) {
 				estado = "entero"
 				unfinishedToken = append(unfinishedToken, char)
-			} else if char == "."{
+			} else if char == "." {
 				estado = "real"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "-" {
@@ -1175,7 +1170,7 @@ func resaltar(archivo string) string {
 				codigoResaltado += ESPACIO_HTML
 			} else if char == "\n" {
 				estado = "inicial"
-				codigoResaltado +=  NUEVO_PARRAFO_HTML
+				codigoResaltado += NUEVO_PARRAFO_HTML
 			} else {
 				codigoResaltado += manejarErrorSintaxis()
 				break
@@ -1193,7 +1188,7 @@ func resaltar(archivo string) string {
 			}
 
 		} else if estado == "literal_caracter" {
-			if char == "\\"{
+			if char == "\\" {
 				estado = "literal_caracter_escapado"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "&#39" {
@@ -1356,8 +1351,11 @@ func isFloatThatEndsWithF(token string) bool {
 
 func isUnsignedOrLongInt(token string) bool {
 	aux := ""
-	for char := range token {
-		if isInt(char) || strings.Contains("eE+-", char) {
+	for i := 0; i < len(token); i++ {
+		char := string(token[i])
+		if isNumeric(char) {
+			aux += char
+		} else if strings.Contains("eE+-", char) {
 			aux += char
 		} else if strings.Contains("lLuU", char) {
 			continue
@@ -1370,7 +1368,7 @@ func isUnsignedOrLongInt(token string) bool {
 	// enteros con exponente E realmente son floats. Primero hay que convertir a
 	// float y luego ver si es int o no
 	if isFloat(aux) {
-		return isInteger(strconv.ParseFloat(aux, 64))
+		return isNumeric(aux)
 	}
 	return false
 }
@@ -1430,3 +1428,5 @@ func check_error(e error) {
 		fmt.Println(e)
 	}
 }
+
+
