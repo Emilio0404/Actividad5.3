@@ -536,6 +536,51 @@ func isVariable(token string) bool {
 	return true
 }
 
+func isHexadecimal(token string) bool {
+	if token[0:2] == "0x" || token[0:2] == "0X" {
+		_, err := strconv.ParseUint(token, 16, 64)
+		return err != nil
+	}
+	return false
+}
+
+func isFloat(token string) bool {
+	_, err := strconv.ParseFloat(token, 64)
+	return err != nil
+}
+
+func isFloatThatEndsWithF(token string) bool {
+	if len(token) < 2 {
+		return false
+	}
+	if token[len(token)-1] == 'F' || token[len(token)-1] == 'f' {
+		_, err := strconv.ParseFloat(token[:len(token)-2], 64)
+		return err == nil
+	}
+	return false
+}
+
+func isUnsignedOrLongInt(token string) bool {
+	aux := ""
+	for char := range token {
+		if isInt(char) || strings.Contains("eE+-", char) {
+			aux += char
+		} else if strings.Contains("lLuU", char) {
+			continue
+		} else {
+			return false
+		}
+	}
+
+	// La implementación de python (a comparación de C), establece que los
+	// enteros con exponente E realmente son floats. Primero hay que convertir a
+	// float y luego ver si es int o no
+	if isFloat(aux) {
+		return isInteger(strconv.ParseFloat(aux, 64))
+	}
+	return false
+}
+
 func manejarErrorSintaxis() string {
 	return "</p>\n<p><span class=\"error\">ERROR DE SINTAXIS</span></p>\n"
 }
