@@ -376,8 +376,90 @@ func resaltar(archivo string) string {
 			}
 
 		} else if estado == "unsigned_int" {
+			if char == "l" || char == "L" {
+				estado = "unsigned_int_long"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "-" {
+				estado = "resta"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "/" {
+				estado = "division"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isSeparator(char) {
+				estado = "separador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == " " {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+			} else if char == "\n" {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + NUEVO_PARRAFO_HTML)
+				unfinishedToken = nil
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "unsigned_long_int" {
+			if char == "l" || char == "L" {
+				estado = "unsigned_long_long_int"
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "-" {
+				estado = "resta"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == "/" {
+				estado = "division"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isOperand(char) {
+				estado = "operador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if isSeparator(char) {
+				estado = "separador"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += tokenEnHTML
+				unfinishedToken = nil
+				unfinishedToken = append(unfinishedToken, char)
+			} else if char == " " {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + ESPACIO_HTML)
+				unfinishedToken = nil
+			} else if char == "\n" {
+				estado = "inicial"
+				tokenEnHTML = generarTokenEnFormatoHTML(unfinishedToken)
+				codigoResaltado += (tokenEnHTML + NUEVO_PARRAFO_HTML)
+				unfinishedToken = nil
+			} else {
+				codigoResaltado += manejarErrorSintaxis()
+				break
+			}
 
 		} else if estado == "unsigned_long_long_int" || estado == "long_unsigned_int" {
 
