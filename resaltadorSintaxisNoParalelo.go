@@ -66,15 +66,9 @@ func main() {
 	}
 
 	start := time.Now()
-	c := make(chan string)
 
 	for i := 0; i < noArgumentos; i++ {
-		go resaltadorSintaxis(nombresArchivos[i], c)
-	}
-
-	for i := 0; i < noArgumentos; i++ {
-		archivoResaltado := <-c
-		fmt.Println(archivoResaltado, "fue resaltado con éxito")
+		resaltadorSintaxis(nombresArchivos[i])
 	}
 
 	elapsed := time.Since(start)
@@ -105,7 +99,7 @@ func archivoExiste(archivo string, directorioActual string) bool {
 	return true
 }
 
-func resaltadorSintaxis(archivo string, c chan string) {
+func resaltadorSintaxis(archivo string) {
 	// Crear archivo HTML
 	nombreArchivoHTML := crearArchivoHTML(archivo)
 	archivoHTML, err := os.Open(nombreArchivoHTML)
@@ -117,8 +111,6 @@ func resaltadorSintaxis(archivo string, c chan string) {
 	codigoResaltado += "\n\t</body>\n</html>"
 
 	escribirCodigoResaltado(nombreArchivoHTML, codigoResaltado)
-
-	c <- archivo
 }
 
 // Crea un archivo HTML con el nombre de archivo que recibe. Si el
