@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -64,9 +65,20 @@ func main() {
 		}
 	}
 
+	start := time.Now()
+	c := make(chan string)
+
 	for i := 0; i < noArgumentos; i++ {
-		resaltadorSintaxis(nombresArchivos[i])
+		go resaltadorSintaxis(nombresArchivos[i], c)
 	}
+
+	for i := 0; i < noArgumentos; i++ {
+		archivoResaltado := <-c
+		fmt.Println(archivoResaltado, "fue resaltado con éxito")
+	}
+
+	elapsed := time.Since(start)
+	fmt.Println("Tiempo: ", elapsed)
 }
 
 func obtenerDirectorioActual() string {
@@ -93,7 +105,7 @@ func archivoExiste(archivo string, directorioActual string) bool {
 	return true
 }
 
-func resaltadorSintaxis(archivo string) {
+func resaltadorSintaxis(archivo string, c chan string) {
 	// Crear archivo HTML
 	nombreArchivoHTML := crearArchivoHTML(archivo)
 	archivoHTML, err := os.Open(nombreArchivoHTML)
@@ -105,6 +117,8 @@ func resaltadorSintaxis(archivo string) {
 	codigoResaltado += "\n\t</body>\n</html>"
 
 	escribirCodigoResaltado(nombreArchivoHTML, codigoResaltado)
+
+	c <- archivo
 }
 
 // Crea un archivo HTML con el nombre de archivo que recibe. Si el
@@ -206,7 +220,6 @@ func resaltar(archivo string) string {
 				estado = "include_define"
 				unfinishedToken = append(unfinishedToken, char)
 			} else {
-				fmt.Print(estado, unfinishedToken, char)
 				codigoResaltado += manejarErrorSintaxis()
 				break
 			}
@@ -1091,8 +1104,8 @@ func resaltar(archivo string) string {
 				estado = "cerrar_comentario_multilinea"
 				unfinishedToken = append(unfinishedToken, char)
 			} else if char == "\n" {
-				token := strings.Join(unfinishedToken, " ")
-				codigoResaltado += "<span class=\"comentario\">" + token + "</span>"
+				token := strings.Join(unfinishedToken, "")
+				codigoResaltado += "<span class=\"comentario\">" + token + "</span>" + ESPACIO_HTML + NUEVO_PARRAFO_HTML
 				unfinishedToken = nil
 			} else if char == " " {
 				unfinishedToken = append(unfinishedToken, ESPACIO_HTML)
@@ -1104,7 +1117,7 @@ func resaltar(archivo string) string {
 			if char == "/" {
 				estado = "inicial"
 				unfinishedToken = append(unfinishedToken, char)
-				token := strings.Join(unfinishedToken, " ")
+				token := strings.Join(unfinishedToken, "")
 				codigoResaltado += "<span class=\"comentario\">" + token + "</span>"
 				unfinishedToken = nil
 			} else if char == "\n" {
@@ -1229,8 +1242,6 @@ func generarTokenEnFormatoHTML(unfinishedTokenList []string) string {
 func generarClase(token string) string {
 
 	clase := ""
-
-	fmt.Println(token)
 
 	if isNumeric(token) {
 		clase = "literal-numerico"
@@ -1365,9 +1376,8 @@ func isUnsignedOrLongInt(token string) bool {
 	// enteros con exponente E realmente son floats. Primero hay que convertir a
 	// float y luego ver si es int o no
 	if isFloat(aux) {
-		flt, err := strconv.ParseFloat(token, 64)
-		check_error(err)
-		return flt == float64(int(flt))
+		_, err := strconv.ParseFloat(aux, 64)
+		return err == nil
 	}
 	return false
 }

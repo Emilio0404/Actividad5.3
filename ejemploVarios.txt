@@ -6,7 +6,6 @@ Comentario multilinea
 
 int main()
 {
-
     int m = 314159E-5L;
     int x = 4e-11;
     int a = 2u;
